@@ -1,5 +1,7 @@
 # Groovy-In-Action-II-Reading-Notes
-Groovy in Action, Second Edition read in 30 days (2 hours read and get hands dirty per day). Try to make notes as much as possible.
+Groovy in Action, Second Edition read in 11 days (3.5 hours read and get hands dirty per day). Try to make notes as much as possible.
+
+Push Hard! （没办法，工作需要，delay deep dive Go reading notes）
 
 ## I. The Groovy Language
 - [ ] Chapter 1: Your way to Groovy
