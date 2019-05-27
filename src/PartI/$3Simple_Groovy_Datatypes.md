@@ -2,10 +2,11 @@
 
 This chapter covers
 
-Groovy’s approach to typing
-Operators as method implementations
-Strings, regular expressions, and numbers
-Do not worry about your difficulties in mathematics. I can assure you mine are still greater.
+* Groovy’s approach to typing
+* Operators as method implementations
+* Strings, regular expressions, and numbers
+
+```Do not worry about your difficulties in mathematics. I can assure you mine are still greater.```
 
 Albert Einstein
 
@@ -187,46 +188,73 @@ String f = '1'	                java.lang.String
 ```
 The def keyword is used to indicate that no particular type is specified.
 
-As we stated earlier, it doesn’t matter whether you declare a variable to be of type int or Integer. Groovy uses the reference type (Integer) either way.
+As we stated earlier, it doesn’t matter whether you declare a variable to be of type int or Integer. Groovy uses the
+reference type (Integer) either way.
 
-It’s important to understand that regardless of whether a variable’s type is explicitly declared, the system is type safe. Unlike untyped languages, Groovy doesn’t allow you to treat an object of one type as an instance of a different type without a well-defined conversion being available. You could never assign a java.util.Date to a reference of type java.lang.Number, in the hope that you’d end up with an object that you could use for calculation. That sort of behavior would be dangerous, which is why Groovy doesn’t allow it any more than Java does.
+It’s important to understand that regardless of whether a variable’s type is explicitly declared, the system is type 
+safe. Unlike untyped languages, Groovy doesn’t allow you to treat an object of one type as an instance of a different 
+type without a well-defined conversion being available. You could never assign a java.util.Date to a reference of type 
+java.lang.Number, in the hope that you’d end up with an object that you could use for calculation. That sort of behavior 
+would be dangerous, which is why Groovy doesn’t allow it any more than Java does.
+{Aaron notes: Above is an important design.}
 
 ### 3.2.2. Dynamic Groovy is type safe
 We’ll first look at Groovy’s default dynamic behavior. It’s important to understand that even when using all of its 
 dynamic capabilities, Groovy is providing full type safety at runtime. In chapter 10, we’ll explore how to make Groovy 
 provide more type checking at compile time to match and even exceed the kind of checking you might expect from Java.
+{Aaron notes: Above is an important design.}
 
-The web is full of heated discussions of whether static or dynamic typing is “better” while it often remains unclear what either should actually mean. Static is often associated with the appearance of type markers in the code. For instance, code such as
+The web is full of heated discussions of whether static or dynamic typing is “better” while it often remains unclear 
+what either should actually mean. Static is often associated with the appearance of type markers in the code. For 
+instance, code such as
 
-String greeting = readFromConsole()
+```String greeting = readFromConsole()```
 is often considered static because of the String type marker, while unmarked code like
 
-def greeting = readFromConsole()
-is usually deemed dynamic. But it isn’t as simple as that. In languages that support type inference[3] and have no dynamic behavior capabilities, it might be possible to fully statically type check the latter code, while in a fully dynamic language, it’s not possible at compile time to type check the former code even with type markers. This is because in general solely dynamic languages cannot tell what type the readFromConsole() method will eventually return,[4] so there’s little point in doing many of the traditional compile-time checks.[5]
-
+```def greeting = readFromConsole()```
+is usually deemed dynamic. But it isn’t as simple as that. In languages that support type inference[3] and have no 
+dynamic behavior capabilities, it might be possible to fully statically type check the latter code, while in a fully 
+dynamic language, it’s not possible at compile time to type check the former code even with type markers. This is 
+because in general solely dynamic languages cannot tell what type the readFromConsole() method will eventually 
+return,[4] so there’s little point in doing many of the traditional compile-time checks.[5]
+```
 3 And indeed Groovy, when using @TypeChecked or @CompileStatic, is one of them!
 
 4 It may, for example, be intercepted, relayed, or replaced by a different method.
 
-5 Groovy will still do some compile-time checks even when compiling dynamically. For instance, if you declare that a class implements an interface, Groovy requires that at compile time it contains the methods from the interface.
+5 Groovy will still do some compile-time checks even when compiling dynamically. For instance, if you declare that a 
+class implements an interface, Groovy requires that at compile time it contains the methods from the interface.
+```
+By default, Groovy is very much a dynamic language. You can safely leave out type markers (and also type casts) in most
+scenarios and know that Groovy will do the appropriate runtime checks to ensure type safety when required. Because type
+markers are optional in Groovy, that concept is often called optional typing. The types are still there, of course, but 
+you can choose not to make them explicit in your code.
 
-By default, Groovy is very much a dynamic language. You can safely leave out type markers (and also type casts) in most scenarios and know that Groovy will do the appropriate runtime checks to ensure type safety when required. Because type markers are optional in Groovy, that concept is often called optional typing. The types are still there, of course, but you can choose not to make them explicit in your code.
+All of that may sound as if type markers are superfluous, but they play an important role not only at runtime—for the 
+method dispatch as you’ll see in chapters 7 and 8—but also for our current concern: type-safe assignments.
 
-All of that may sound as if type markers are superfluous, but they play an important role not only at runtime—for the method dispatch as you’ll see in chapters 7 and 8—but also for our current concern: type-safe assignments.
-
-Groovy uses type markers to enforce the Java type system at runtime. Yes, you’ve read this correctly: Groovy enforces the Java type system! But it only does so at runtime, where Java does so with a mixture of compile-time and runtime checks. Java enforces the type system to a large extent at compile time based on static information, which gives static typing its second meaning. The fact that Java does part of the work at runtime can easily be inferred from the fact that Java programs can still raise ClassCastExceptions and other runtime typing errors.
+Groovy uses type markers to enforce the Java type system at runtime. Yes, you’ve read this correctly: Groovy enforces 
+the Java type system! But it only does so at runtime, where Java does so with a mixture of compile-time and runtime 
+checks. Java enforces the type system to a large extent at compile time based on static information, which gives static 
+typing its second meaning. The fact that Java does part of the work at runtime can easily be inferred from the fact that 
+Java programs can still raise ClassCastExceptions and other runtime typing errors.
 
 All this explains why the Groovy compiler[6] takes no issue with
-
-6 Your IDE will present you a big warning, though. It can apply additional logic like data flow analysis and type inference to even discover more hidden assignment errors. It’s your responsibility as a developer on how to deal with these warnings.
-
+```
+6 Your IDE will present you a big warning, though. It can apply additional logic like data flow analysis and type 
+inference to even discover more hidden assignment errors. It’s your responsibility as a developer on how to deal with 
+these warnings.
+```
+```
 Integer myInt = new Object()
 println myInt
+```
 but when running the code, the cast from Object to Integer is enforced and you’ll see
-
+```
 org.codehaus.groovy.runtime.typehandling.GroovyCastException:
     Cannot cast object 'java.lang.Object@5b0bc6'
     with class 'java.lang.Object' to class 'java.lang.Integer'
+```
 In fact, this is the same effect you see if you write a typecast on the right-hand side of the assignment in Java.
 
 Consider this Java code:
@@ -236,11 +264,11 @@ Integer myInt = (Integer) returnsObject(); // Java!
 The Java compiler will check whether returnsObject() returns an object of a type that can sensibly be cast to Integer. 
 Let’s assume that the declared return type is Object. That makes Object the compile-time type[7] of the returnsObject() 
 reference. The hope is that at runtime it’ll yield an Integer, which becomes its runtime type.[8]
-
+```
 7 This is usually also called the static type but we avoid this term here to avoid further confusion.
 
 8 Often called the dynamic type—a term we avoid for the same reason.
-
+```
 The Groovy code
 ```
 Integer myInt = returnsObject()
@@ -274,10 +302,12 @@ the compiler accepts code like printNext(new Object()), this will never result i
 to a common misconception.
 
 Groovy types aren’t dynamic, they never change
+{Aaron notes: Above is an important design.}
 If we could make the ink blink, we would! The word “dynamic” doesn’t mean that the type of a reference, once declared, 
 can ever change. Once you’ve declared Integer myInt, you cannot execute myInt = new Object(). This will throw a 
 GroovyCastException. You can only assign a value, which Groovy can cast to an Integer. As you see, the phrase 
 “dynamic typing” can be misleading and is best avoided.
+{Aaron notes: Above is an important design.}
 
 Type declarations and type casts also play an important role in the Groovy method dispatch that we’ll examine in more 
 detail in chapters 7 and 8. Casts come with some additional logic to make development easier.
@@ -288,7 +318,9 @@ casting primitive types to their wrapper classes and vice versa, arrays to lists
 widening for numeric types, applying the “Groovy truth” (see chapter 6) for casts to boolean, calling toString() for 
 casts to string, and so on. The exhaustive list can be looked up in DefaultTypeTransformation.castToType.
 
-Two notable features are baked into the Groovy type casting logic that may be surprising at first, but make for really elegant code: casting lists and maps to arbitrary classes. The following listing introduces these features by creating Point, Rectangle, and Dimension objects.
+Two notable features are baked into the Groovy type casting logic that may be surprising at first, but make for really 
+elegant code: casting lists and maps to arbitrary classes. The following listing introduces these features by creating 
+Point, Rectangle, and Dimension objects.
 
 Listing 3.2. Casting lists and maps to arbitrary classes
 ```
@@ -309,7 +341,8 @@ As you see from the listing, implicit runtime casting can lead to very readable 
 assignments where Groovy knows that rect.size is of type java.awt.Dimension and can cast your list or map of constructor
 arguments onto that. You don’t have to worry about it: Groovy infers the type for you.
 
-We’ve seen the value of type markers and pervasive casting. But because Groovy offers optional typing, what is the use case for omitting type markers?
+We’ve seen the value of type markers and pervasive casting. But because Groovy offers optional typing, what is the use 
+case for omitting type markers?
 
 ### 3.2.4. The case for optional typing
 Omitting type markers isn’t only convenient for the lazy programmer who does adhoc scripting, but is also useful for 
@@ -328,30 +361,47 @@ The second use of unmarked typing is calling methods on objects that have no gua
 typing, and it allows the implementation of generic functionality with high reusability.
 
 Duck typing
-As coined by the dynamic language community, “If it walks like a duck and quacks like a duck, it must be a duck.” Weakly typed languages usually let you call any method or access any property on an object, even if you don’t know at compile time or even at runtime that the object is of a known type that contains that method or property. This means you know the kind of objects you expect will have the relevant signature or property. It’s an assumption. If you can call the method or access the property, it must be the type you were expecting—hence, it’s a duck because it walks and quacks like a duck!
+As coined by the dynamic language community, “If it walks like a duck and quacks like a duck, it must be a duck.” Weakly 
+typed languages usually let you call any method or access any property on an object, even if you don’t know at compile 
+time or even at runtime that the object is of a known type that contains that method or property. This means you know 
+the kind of objects you expect will have the relevant signature or property. It’s an assumption. If you can call the 
+method or access the property, it must be the type you were expecting—hence, it’s a duck because it walks and quacks 
+like a duck!
 
-Duck typing implies that as long as an object has a certain set of method signatures, it’s interchangeable with any other object that has the same set of methods, regardless of whether the two have a related inheritance hierarchy.
+Duck typing implies that as long as an object has a certain set of method signatures, it’s interchangeable with any 
+other object that has the same set of methods, regardless of whether the two have a related inheritance hierarchy.
 
-For programmers with a strong Java background, it’s not uncommon to start programming Groovy almost entirely using type declarations, and gradually shift into a more dynamic mode over time. This is legitimate because it allows everybody to use what they’re confident with.
+For programmers with a strong Java background, it’s not uncommon to start programming Groovy almost entirely using type 
+declarations, and gradually shift into a more dynamic mode over time. This is legitimate because it allows everybody to 
+use what they’re confident with.
 
 Rule of Thumb
-Experienced Groovy programmers tend to follow this rule of thumb: as soon as you think about the type of a reference, declare it; if you’re thinking of it as “just an object,” leave the type out.
+Experienced Groovy programmers tend to follow this rule of thumb: as soon as you think about the type of a reference, 
+declare it; if you’re thinking of it as “just an object,” leave the type out.
+{Aaron notes: Above is an important design.}
 
-Whether or not you declare your types, you’ll find that Groovy lets you do a lot more than you may expect. Let’s start by looking at the ability to override operators.
+Whether or not you declare your types, you’ll find that Groovy lets you do a lot more than you may expect. Let’s start 
+by looking at the ability to override operators.
 
 ## 3.3. OVERRIDING OPERATORS
-Overriding refers to the object-oriented concept of having types that specify behavior and subtypes that override this behavior to make it more specific. When a language bases its operators on method calls and allows these methods to be overridden, the approach is called operator overriding.
+Overriding refers to the object-oriented concept of having types that specify behavior and subtypes that override this 
+behavior to make it more specific. When a language bases its operators on method calls and allows these methods to be 
+overridden, the approach is called operator overriding.
 
-It’s more conventional to use the term operator overloading, which means almost the same thing. The difference is that overloading suggests, at least to many Java programmers, that you have multiple implementations of a method (and thus the associated operator) that differ only in their parameter types.
+It’s more conventional to use the term operator overloading, which means almost the same thing. The difference is that 
+overloading suggests, at least to many Java programmers, that you have multiple implementations of a method (and thus 
+the associated operator) that differ only in their parameter types.
 
-We’ll show you which operators can be overridden, show a full example of how overriding works in practice, and offer guidance on the decisions you need to make when operators work with multiple types.
+We’ll show you which operators can be overridden, show a full example of how overriding works in practice, and offer 
+guidance on the decisions you need to make when operators work with multiple types.
 
 ### 3.3.1. Overview of overridable operators
-As you saw in section 3.1.2, 1+1 is a convenient way of writing 1.plus(1). This is achieved by class Integer having an implementation of the plus method.
+As you saw in section 3.1.2, 1+1 is a convenient way of writing 1.plus(1). This is achieved by class Integer having an 
+implementation of the plus method.
 
 This convenient feature is also available for other operators. Table 3.4 shows an overview.
-
-Table 3.4. Method-based operators
+```
+                                Table 3.4. Method-based operators
 Operator        Name                Method                      Works with
 
 a + b	        Plus	            a.plus(b)	                Number, String, StringBuffer, Collection, Map, Date, Duration
@@ -359,103 +409,149 @@ a – b	        Minus	            a.minus(b)	                Number, String, Lis
 a * b	        Star	            a.multiply(b)	            Number, String, Collection
 a / b	        Divide	            a.div(b)	                Number
 a % b	        Modulo	            a.mod(b)	                Integral number
-a++ ++a	        Postincrement       def v = a; a = a.next();    Iterator, Number, String, Date, 
-                Preincrement	    v a = a.next(); a	        Range
-a-- --a	        Postdecrement 
-                Predecrement	def v = a; a = a.previous(); v a = a.previous(); a	Iterator, Number, String, Date, Range
--a	Unary minus	a.unaryMinus()	Number, ArrayList
-+a	Unary plus	a.unaryPlus()	Number, ArrayList
-a ** b	Power	a.power(b)	Number
-a | b	Numerical or	a.or(b)	Number, Boolean, BitSet, Process
-a & b	Numerical and	a.and(b)	Number, Boolean, BitSet
-a ^ b	Numerical xor	a.xor(b)	Number, Boolean, BitSet
-~a	Bitwise complement	a.bitwiseNegate()	Number, String (the latter returning a regular expression pattern)
-a[b]	Subscript	a.getAt(b)	Object, List, Map, CharSequence, Matcher, many more
-a[b] = c	Subscript assignment	a.putAt(b, c)	Object, List, Map, StringBuffer, many more
-a << b	Left shift	a.leftShift(b)	Integral number, also used like “append” to StringBuffer, Writer, File, Socket, List
-a >> b	Right shift	a.rightShift(b)	Number
-a >>> b	Right shift unsigned	a.rightShiftUnsigned(b)	Number
-switch(a
-){
-case b:
-}	Classification	b.isCase(a)	Object, Class, Range, Collection, Pattern, Closure; also used with Collection c in c.grep(b), which returns all items of c where b.isCase(item)
-a in b	Classification	b.isCase(a)	See previous row
-a == b	Equals	if (a implements Comparable) { a.compareTo(b) == 0 } else { a.equals(b) }	Object; consider hashCode()[a]
-a != b	Not equal	!(a == b)	Object
-a <=> b	Spaceship	a.compareTo(b)	java.lang.Comparable
-a > b	Greater than	a.compareTo(b) > 0	 
-a >= b	Greater than or equal to	a.compareTo(b) >= 0	 
-a < b	Less than	a.compareTo(b) < 0	 
-a <= b	Less than or equal to	a.compareTo(b) <= 0	 
-a as type	Enforced coercion	a.asType (typeClass)	Any type
-a When overriding the equals method, Java strongly encourages the developer to also override the hashCode() method such that equal objects have the same hash code (whereas objects with the same hash code are not necessarily equal). See the Java API documentation of java.lang.Object#equals.
+a++ 	        Postincrement       def v = a; a = a.next();    Iterator, Number, String, Date, 
+++a             Preincrement	    v a = a.next(); a	        Range
+a-- --a	        Postdecrement       def v = a; a = a.previous();
+                Predecrement	    v a = a.previous(); a	    Iterator, Number, String, Date, Range
+-a	            Unary minus	        a.unaryMinus()	            Number, ArrayList
++a	            Unary plus	        a.unaryPlus()	            Number, ArrayList
+a ** b	        Power	            a.power(b)	                Number
+a | b	        Numerical or	    a.or(b)	                    Number, Boolean, BitSet, Process
+a & b	        Numerical and	    a.and(b)	                Number, Boolean, BitSet
+a ^ b	        Numerical xor	    a.xor(b)	                Number, Boolean, BitSet
+~a	            Bitwise complement	a.bitwiseNegate()	        Number, String (the latter returning a regular expression pattern)
+a[b]	        Subscript	        a.getAt(b)	                Object, List, Map, CharSequence, Matcher, many more
+a[b] = c	    Subscript assignment	a.putAt(b, c)	        Object, List, Map, StringBuffer, many more
+a << b	        Left shift	        a.leftShift(b)	            Integral number, also used like “append” to StringBuffer, Writer, File, Socket, List
+a >> b	        Right shift	        a.rightShift(b)	            Number
+a >>> b	        Right shift         unsigned	                a.rightShiftUnsigned(b)	Number
 
+switch(a)
+{
+case b:         Classification      b.isCase(a)	                Object, Class, Range, Collection, Pattern, Closure; also used with Collection c in c.grep(b), which returns all items of c where b.isCase (item)
+}		
+a in b	        Classification	    b.isCase(a)	See previous row
+
+a == b	        Equals	            if (a implements Comparable) Object; consider hashCode()[a]
+                                    { a.compareTo(b) == 0 } 
+                                    else { a.equals(b) }
+{Aaron notes: Above is an important design.} Any type a When overriding the equals method, Java strongly encourages the developer 
+to also override the hashCode() method such that equal objects have the same hash code (whereas objects with the same 
+hash code are not necessarily equal). See the Java API documentation of java.lang.Object#equals.    	
+
+a != b	        Not equal	        !(a == b)	Object
+a <=> b	        Spaceship	        a.compareTo(b)	java.lang.Comparable
+a > b	        Greater than	    a.compareTo(b) > 0	 
+a >= b	        Greater than or equal to	a.compareTo(b) >= 0	 
+a < b	        Less than	        a.compareTo(b) < 0	 
+a <= b	        Less than or equal to	a.compareTo(b) <= 0	 
+a as type	    Enforced coercion	a.asType (typeClass)	
+```
 The case of equals
-Nothing is easier than determining whether a == b is true, right? Well, only at first sight if you want this to be a useful equality check. If both are null, they should count as equal. If they reference the same object, they’re equal without the need for checking. In other words, a == a for all values of a.
+Nothing is easier than determining whether a == b is true, right? Well, only at first sight if you want this to be a 
+useful equality check. If both are null, they should count as equal. If they reference the same object, they’re equal 
+without the need for checking. In other words, a == a for all values of a.
+{Aaron notes: Above is an important design.}
+But there’s more! If a >= b and a <= b, then you can deduce that a == b, right? But this may impose a conflict if you 
+have a Comparable object that doesn’t implement the equals method consistently. This is why Groovy only looks at the 
+compareTo method for Comparable objects when doing the equality check and ignores the equals method in this case. You 
+can find the full logic implemented in the Groovy runtime under DefaultTypeTransformation.compareEqual(a,b).
+{Aaron notes: Above is an important design.}
 
-But there’s more! If a >= b and a <= b, then you can deduce that a == b, right? But this may impose a conflict if you have a Comparable object that doesn’t implement the equals method consistently. This is why Groovy only looks at the compareTo method for Comparable objects when doing the equality check and ignores the equals method in this case. You can find the full logic implemented in the Groovy runtime under DefaultTypeTransformation.compareEqual(a,b).
+You can easily use any of these operators with your own classes. Just implement the respective method. Unlike in Java, 
+there’s no need to implement a specific interface.
 
-You can easily use any of these operators with your own classes. Just implement the respective method. Unlike in Java, there’s no need to implement a specific interface.
-
-Strictly speaking, Groovy has even more operators in addition to those in table 3.4, such as the dot operator for referencing fields and methods. Their behavior can also be overridden. They come into play in chapter 7.
+Strictly speaking, Groovy has even more operators in addition to those in table 3.4, such as the dot operator for 
+referencing fields and methods. Their behavior can also be overridden. They come into play in chapter 7.
 
 This is all good in theory, but let’s see how it all works in practice.
 
 ### 3.3.2. Overridden operators in action
-Listing 3.3 demonstrates an implementation of the == (equals) and + (plus) operators for a Money class. It’s an implementation of the Value Object[9] pattern. You allow values of the same currency to be summed, but don’t support multicurrency addition.
+Listing 3.3 demonstrates an implementation of the == (equals) and + (plus) operators for a Money class. It’s an 
+implementation of the Value Object[9] pattern. You allow values of the same currency to be summed, but don’t support 
+multicurrency addition.
 
 9 See a discussion of value objects at http://c2.com/cgi/wiki?ValueObject.
 
-You implement equals indirectly by using the @Immutable annotation as introduced in section 2.3.4. Remember that == (or equals method) denotes object equality (equal values), not identity (same object instances).
+You implement equals indirectly by using the @Immutable annotation as introduced in section 2.3.4. Remember 
+that == (or equals method) denotes object equality (equal values), not identity (same object instances).
 
 Listing 3.3. Overriding the plus and equals operators
+{Aaron notes: Above is an important design.}
 
+Because every immutable object automatically gets a value-based implementation of equals, you get away with only a 
+minimal declaration at . The use of this operator is shown at , where one dollar becomes equal to any other dollar. 
+At , the + operator isn’t overridden in the strict sense of the word, because there’s no such operator in Money’s 
+superclass (Object). In this case, operator implementing is the best wording. This is used at , where two Money 
+objects are added.
 
-Because every immutable object automatically gets a value-based implementation of equals, you get away with only a minimal declaration at . The use of this operator is shown at , where one dollar becomes equal to any other dollar. At , the + operator isn’t overridden in the strict sense of the word, because there’s no such operator in Money’s superclass (Object). In this case, operator implementing is the best wording. This is used at , where two Money objects are added.
+We mentioned earlier in this section that Java programmers may already be familiar with method overloading. You can 
+apply that concept even with operators by defining additional plus implementations. Let’s look at a possible overload 
+for the + operator. In listing 3.3, Money can only be added via the plus method to other Money objects. However, you 
+might also want to be able to add Money with code like this:
 
-We mentioned earlier in this section that Java programmers may already be familiar with method overloading. You can apply that concept even with operators by defining additional plus implementations. Let’s look at a possible overload for the + operator. In listing 3.3, Money can only be added via the plus method to other Money objects. However, you might also want to be able to add Money with code like this:
-
-assert buck + 1 == new Money(2, 'USD')
+``` assert buck + 1 == new Money(2, 'USD') ```
 We can provide the additional method as follows:
-
+```
 Money plus (Integer more) {
     return new Money(amount + more, currency)
 }
-which overloads the plus method with a second implementation that takes an Integer parameter. The Groovy method dispatch finds the right implementation at runtime.
+```
+which overloads the plus method with a second implementation that takes an Integer parameter. The Groovy method dispatch 
+finds the right implementation at runtime.
 
 Note
-Our plus operation on the Money class returns Money objects in both cases. We describe this by saying that Money’s plus operation is closed under its type. Whatever operation you perform on an instance of Money, you end up with another instance of Money.
+Our plus operation on the Money class returns Money objects in both cases. We describe this by saying that Money’s plus 
+operation is closed under its type. Whatever operation you perform on an instance of Money, you end up with another 
+instance of Money.
+{Aaron notes: Above is an important design.}
 
-This example leads to the general issue of how to deal with different parameter types when implementing an operator method. We’ll go through aspects of this issue in the next section.
+This example leads to the general issue of how to deal with different parameter types when implementing an operator 
+method. We’ll go through aspects of this issue in the next section.
 
 ### 3.3.3. Making coercion work for you
-Implementing operators is straightforward when both operands are of the same type. Things get more complex with a mixture of types, say
-
+Implementing operators is straightforward when both operands are of the same type. Things get more complex with a 
+mixture of types, say
+```
 1 + 1.0
-This adds an Integer and a BigDecimal. What is the return type? Section 3.6 answers this question for the special case of numbers, but the issue is more general. One of the two arguments needs to be promoted to the more general type. This is called coercion.
+```
+This adds an Integer and a BigDecimal. What is the return type? Section 3.6 answers this question for the special case 
+of numbers, but the issue is more general. One of the two arguments needs to be promoted to the more general type. 
+This is called coercion.
+{Aaron notes: Above is an important design.}
 
 When implementing operators, there are three main issues to consider as part of coercion.
 
-Supported argument types
-You need to decide which argument types and values will be allowed. If an operator must take a potentially inappropriate type, throw an IllegalArgumentException where necessary. In the Money example, even though it makes sense to use Money as the parameter for the plus operator, you don’t allow different currencies to be added together.
+1. Supported argument types
+You need to decide which argument types and values will be allowed. If an operator must take a potentially inappropriate 
+type, throw an IllegalArgumentException where necessary. In the Money example, even though it makes sense to use Money 
+as the parameter for the plus operator, you don’t allow different currencies to be added together.
 
-Promoting more specific arguments
-If the argument type is a more specific one than your own type, promote it to your type and return an object of your type. To see what this means, consider how you might implement the + operator if you were designing the BigDecimal class, and what you’d do for an Integer argument.
+2. Promoting more specific arguments
+If the argument type is a more specific one than your own type, promote it to your type and return an object of your 
+type. To see what this means, consider how you might implement the + operator if you were designing the BigDecimal 
+class, and what you’d do for an Integer argument.
 
-Integer is more specific than BigDecimal: every Integer value can be expressed as a BigDecimal, but the reverse isn’t true. So for the BigDecimal.plus(Integer) operator, you’d consider promoting the Integer to BigDecimal, performing the addition, and then returning another BigDecimal—even if the result could accurately be expressed as an Integer.
+Integer is more specific than BigDecimal: every Integer value can be expressed as a BigDecimal, but the reverse isn’t 
+true. So for the BigDecimal.plus(Integer) operator, you’d consider promoting the Integer to BigDecimal, performing the 
+addition, and then returning another BigDecimal—even if the result could accurately be expressed as an Integer.
 
-Handling more general arguments with double dispatch
-If the argument type is more general, call its operator method with yourself (“this,” the current object) as an argument. Let it promote you. This is also called double dispatch,[10] and it helps to avoid duplicated, asymmetric, possibly inconsistent code. Let’s reverse the previous example and consider Integer.plus (BigDecimal operand).
+3. Handling more general arguments with double dispatch
+If the argument type is more general, call its operator method with yourself (“this,” the current object) as an 
+argument. Let it promote you. This is also called double dispatch,[10] and it helps to avoid duplicated, asymmetric, 
+possibly inconsistent code. Let’s reverse the previous example and consider Integer.plus (BigDecimal operand).
 
-10 Double dispatch is usually used with overloaded methods: a.method(b) calls b.method(a) where method is overloaded with method(TypeA) and method(TypeB).
+*10 Double dispatch is usually used with overloaded methods: a.method(b) calls b.method(a) where method is overloaded 
+*with method(TypeA) and method(TypeB).
 
 We’d consider returning the result of the expression operand.plus(this), delegating the work to BigDecimal’s plus(Integer) method. The result would be a BigDecimal, which is reasonable—it’d be odd for 1+1.5 to return an Integer but 1.5+1 to return a BigDecimal.
 
 Of course, this is only applicable for commutative[11] operators. Test rigorously, and don’t make the mistake of creating an endless cycle. If Integer’s plus is calling BigInteger’s plus, you better make sure that BigInteger’s plus doesn’t call back to Integer!
 
-11 An operator is commutative if the operands can be exchanged without changing the result of the operation. For example, plus is usually required to be commutative (a + b == b + a) but minus is not (a – b != b - a).
+*11 An operator is commutative if the operands can be exchanged without changing the result of the operation. For 
+*example, plus is usually required to be commutative (a + b == b + a) but minus is not (a – b != b - a).
 
-Groovy’s conventional behavior
+4. Groovy’s conventional behavior
 Groovy’s general strategy of coercion is to return the most general type. Other languages such as Ruby try to be smarter and return the least general type that can be used without losing information from range or precision. The Ruby way saves memory at the expense of processing time. It also requires that the language promotes a type to a more general one when the operation would generate an overflow of that type’s range. Otherwise, intermediary results in a complex calculation could truncate the result.
 
 Now that you know how Groovy handles types in general, we can delve deeper into what it provides for each of the datatypes it supports at the language level. We begin with the type that’s probably used more than any other non-numeric type: the humble string.
