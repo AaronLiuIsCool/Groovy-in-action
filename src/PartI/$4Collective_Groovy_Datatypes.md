@@ -11,13 +11,24 @@ This chapter covers
 
 Albert Einstein
 
-The nice thing about computers is that they never get tired of repeatedly doing the same task. This is probably the singlemost important quality that justifies letting them take part in our lives. Searching through countless files or web pages, downloading emails every 10 minutes, looking up all values of a stock symbol for the last quarter to paint a nice graph—these are only a few examples in which a computer needs to repeatedly process an item of a data collection. It’s no wonder that a great deal of programming work is about collections.
+The nice thing about computers is that they never get tired of repeatedly doing the same task. This is probably the 
+singlemost important quality that justifies letting them take part in our lives. Searching through countless files 
+or web pages, downloading emails every 10 minutes, looking up all values of a stock symbol for the last quarter to 
+paint a nice graph—these are only a few examples in which a computer needs to repeatedly process an item of a data 
+collection. It’s no wonder that a great deal of programming work is about collections.
 
-Because collections are so prominent in programming, Groovy alleviates the tedium of using them by directly supporting datatypes of a collective nature: ranges, lists, and maps. Just as with simple datatypes, Groovy’s support for collective datatypes encompasses new lightweight means for literal declaration, specialized operators, and numerous GDK enhancements.
+Because collections are so prominent in programming, Groovy alleviates the tedium of using them by directly supporting 
+datatypes of a collective nature: ranges, lists, and maps. Just as with simple datatypes, Groovy’s support for 
+collective datatypes encompasses new lightweight means for literal declaration, specialized operators, and numerous 
+GDK enhancements.
 
-The notation that Groovy uses to set its collective datatypes into action will be new to Java programmers, but as you’ll see, it’s easy to understand and remember. You’ll pick it up so quickly that you’ll hardly be able to imagine a time when you were new to the concept.
+The notation that Groovy uses to set its collective datatypes into action will be new to Java programmers, but as 
+you’ll see, it’s easy to understand and remember. You’ll pick it up so quickly that you’ll hardly be able to imagine 
+a time when you were new to the concept.
 
-Despite the new notation possibilities, lists and maps have the very same semantics as in Java. This situation is slightly different for ranges, because they don’t have a direct equivalent in Java. So let’s start our tour with that topic.
+Despite the new notation possibilities, lists and maps have the very same semantics as in Java. This situation is 
+slightly different for ranges, because they don’t have a direct equivalent in Java. So let’s start our tour with 
+that topic.
 
 ## 4.1. WORKING WITH RANGES
 Think about how often you’ve written a loop like this:
@@ -25,27 +36,43 @@ Think about how often you’ve written a loop like this:
 for (int i=0; i<upperBound; i++){
    // do something with i
 }
-Most of us have done this thousands of times. It’s so common that it is second nature. Does the code tell you what it does or how it does it?
 
-After inspecting the variable, the conditional, and the incrementation, you see that it’s an iteration starting at zero and not reaching the upper bound, assuming there are no side effects on i in the loop body. You have to go through the description of how the code works to find out what it does.
+Most of us have done this thousands of times. It’s so common that it is second nature. Does the code tell you what 
+it does or how it does it?
+
+After inspecting the variable, the conditional, and the incrementation, you see that it’s an iteration starting at zero 
+and not reaching the upper bound, assuming there are no side effects on i in the loop body. You have to go through the 
+description of how the code works to find out what it does.
 
 Next, consider how often you’ve written a conditional like this:
 
 if (x >= 0 && x <= upperBound) {
     // do something with x
 }
-The same thing applies here: you have to inspect how the code works to understand what it does. Variable x must be between zero and an upper bound for further processing. It’s easy to overlook that the upper bound is now inclusive.
 
-We’re not saying that we make mistakes using this syntax on a regular basis. We’re not saying that you can’t get used to (or indeed haven’t gotten used to) the C-style for loop, as countless programmers have over the years. What we’re saying is that it’s harder than it needs to be; and, more important, it’s less expressive than it could be. Can you understand it? Absolutely. Then again, you could understand this chapter if it were written entirely in capital letters—that doesn’t make it a good idea, though.
+The same thing applies here: you have to inspect how the code works to understand what it does. Variable x must be 
+between zero and an upper bound for further processing. It’s easy to overlook that the upper bound is now inclusive.
 
-Groovy allows you to reveal the meaning of such code pieces by providing the concept of a range. A range has a left bound and a right bound. You can do something for each element of a range, effectively iterating through it. You can determine whether a candidate element falls inside a range. In other words, a range is an interval plus a strategy for how to move through it.
+We’re not saying that we make mistakes using this syntax on a regular basis. We’re not saying that you can’t get used 
+to (or indeed haven’t gotten used to) the C-style for loop, as countless programmers have over the years. What we’re 
+saying is that it’s harder than it needs to be; and, more important, it’s less expressive than it could be. Can you 
+understand it? Absolutely. Then again, you could understand this chapter if it were written entirely in capital 
+letters—that doesn’t make it a good idea, though.
+
+Groovy allows you to reveal the meaning of such code pieces by providing the concept of a range. A range has a left 
+bound and a right bound. You can do something for each element of a range, effectively iterating through it. You can 
+determine whether a candidate element falls inside a range. In other words, a range is an interval plus a strategy 
+for how to move through it.
 
 By introducing the new concept of ranges, Groovy extends your means of expressing your intentions in the code.
 
-We’ll show you how to specify ranges, how the fact that they’re objects makes them ubiquitously applicable, how to use custom objects as bounds, and how they’re typically used in the GDK.
+We’ll show you how to specify ranges, how the fact that they’re objects makes them ubiquitously applicable, how to use 
+custom objects as bounds, and how they’re typically used in the GDK.
 
 ### 4.1.1. Specifying ranges
-Ranges are specified using the double-dot range operator (..) between the left and right bounds. This operator has a low precedence, so you often need to enclose the declaration in parentheses. Ranges can also be declared using their respective constructors.
+Ranges are specified using the double-dot range operator (..) between the left and right bounds. This operator has a 
+low precedence, so you often need to enclose the declaration in parentheses. Ranges can also be declared using their 
+respective constructors.
 
 The ..< range operator specifies a half-exclusive range—that is, the value on the right isn’t part of the range:
 

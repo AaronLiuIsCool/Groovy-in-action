@@ -4,9 +4,9 @@ Groovy in Action, Second Edition read in 11 days (3.5 hours read and get hands d
 Push Hard! （没办法，工作需要，delay deep dive Go reading notes）
 
 ## I. The Groovy Language
-- [ ] Chapter 1: Your way to Groovy
-- [ ] Chapter 2: Overture: Groovy basics
-- [ ] Chapter 3: Simple Groovy datatypes
+- [X] Chapter 1: Your way to Groovy
+- [X] Chapter 2: Overture: Groovy basics
+- [X] Chapter 3: Simple Groovy datatypes
 - [ ] Chapter 4: Collective Groovy datatypes
 - [ ] Chapter 5: Working with closures
 - [ ] Chapter 6: Groovy control structures
